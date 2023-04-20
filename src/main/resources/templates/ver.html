@@ -7,13 +7,34 @@
     <div class="card bg-light">
         <div class="card-header" th:text="${titulo}"></div>
         <div class="card-body">
-            <img th:if="${#strings.length(cliente.foto) > 0}" th:src="@{'/uploads/' + ${cliente.foto}}" th:alt="${cliente.foto}" class="img-thumbnail rounded float-left" style="max-width: 25%;">
+            <img th:if="${#strings.length(cliente.foto) > 0}" th:src="@{'/uploads/' + ${cliente.foto}}"
+                 th:alt="${cliente.foto}" class="img-thumbnail rounded float-left" style="max-width: 25%;">
             <ul class="list-group">
                 <li class="list-group-item" th:text="${cliente.nombre}"></li>
                 <li class="list-group-item" th:text="${cliente.apellido}"></li>
                 <li class="list-group-item" th:text="${cliente.email}"></li>
                 <li class="list-group-item" th:text="${cliente.createAt}"></li>
             </ul>
+            <div class="alert alert-info my-4" th:if="${#lists.isEmpty(cliente.facturas)}"
+                 th:text="'No hay facturas para el cliente ' + ${cliente.nombre} + ' ' + ${cliente.apellido}"></div>
+            <table class="table table-bordered table-striped my-4" th:if="${not #lists.isEmpty(cliente.facturas)}">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Folio</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="factura : ${cliente.facturas}">
+                    <td th:text="${factura.id}"></td>
+                    <td th:text="${factura.descripcion}"></td>
+                    <td th:text="${factura.createAt}"></td>
+                    <td th:text="${factura.total}"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

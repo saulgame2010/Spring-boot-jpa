@@ -23,3 +23,11 @@ INSERT INTO clientes (nombre, apellido, email, created_at, foto) values ('Tracer
 INSERT INTO clientes (nombre, apellido, email, created_at, foto) values ('Saúl', 'García', 'saulgame2010@gmail.com', '2023-04-11', '');
 INSERT INTO clientes (nombre, apellido, email, created_at, foto) values ('Tracer', 'Medina', 'tracer@gmail.com', '2023-04-11', '');
 INSERT INTO clientes (nombre, apellido, email, created_at, foto) values ('Saúl', 'García', 'saulgame2010@gmail.com', '2023-04-11', '');
+
+/* Poblar tabla Productos */
+INSERT INTO producto (nombre, precio, create_at) VALUES ('Nintendo Switch', 9800, NOW());
+INSERT INTO producto (nombre, precio, create_at) VALUES ('Mouse Logitech', 1500, NOW());
+INSERT INTO producto (nombre, precio, create_at) VALUES ('Laptop Dell', 15600, NOW());
+INSERT INTO producto (nombre, precio, create_at) VALUES ('OPPO Reno 7', 9100, NOW());
+INSERT INTO producto (nombre, precio, create_at) VALUES ('Gibson Les Paul', 50200, NOW());
+INSERT INTO producto (nombre, precio, create_at) VALUES ('EVH Wolfgang Alpha', 25800, NOW());
