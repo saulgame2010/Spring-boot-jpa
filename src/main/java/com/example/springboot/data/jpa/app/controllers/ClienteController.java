@@ -27,7 +27,7 @@ import java.util.Map;
 @Controller
 @SessionAttributes("cliente")
 public class ClienteController {
-    private IClienteService iClienteDao;
+    private IClienteService iClienteService;
     private IUploadFileService iUploadFileService;
 
     // La expresión regular ':.+' hace que Spring no trunque la extensión del archivo, ya que por defecto la manda alv
@@ -47,7 +47,7 @@ public class ClienteController {
 
     @GetMapping("/ver/{id}")
     public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
-        Cliente cliente = iClienteDao.findOne(id);
+        Cliente cliente = iClienteService.findOne(id);
         if(cliente == null) {
             flash.addFlashAttribute("error", "El cliente no existe en el sistema");
             return "redirect:/listar";
@@ -60,7 +60,7 @@ public class ClienteController {
     @GetMapping("/listar")
     public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
         Pageable pageableRequest = PageRequest.of(page, 4);
-        Page<Cliente> clientes = iClienteDao.findAll(pageableRequest);
+        Page<Cliente> clientes = iClienteService.findAll(pageableRequest);
         PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
         model.addAttribute("titulo", "Listado de clientes");
         model.addAttribute("clientes", clientes);
@@ -97,7 +97,7 @@ public class ClienteController {
             cliente.setFoto(uniqueFilename);
         }
         String mensajeFlash = (cliente.getId() != null) ? "Cliente editado con éxito" : "Cliente creado con éxito";
-        iClienteDao.save(cliente);
+        iClienteService.save(cliente);
         status.setComplete();
         flash.addFlashAttribute("success", mensajeFlash);
         return "redirect:/listar";
@@ -107,7 +107,7 @@ public class ClienteController {
     public String edit(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
         Cliente cliente = null;
         if(id > 0) {
-            cliente = iClienteDao.findOne(id);
+            cliente = iClienteService.findOne(id);
             if(cliente == null) {
                 flash.addFlashAttribute("error", "El cliente no existe en la Base de datos");
                 return "redirect:/listar";
@@ -124,8 +124,8 @@ public class ClienteController {
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
         if(id > 0) {
-            Cliente cliente = iClienteDao.findOne(id);
-            iClienteDao.delete(id);
+            Cliente cliente = iClienteService.findOne(id);
+            iClienteService.delete(id);
             flash.addFlashAttribute("success", "Cliente eliminado con éxito");
             if(iUploadFileService.delete(cliente.getFoto())) {
                 flash.addFlashAttribute("info", "Se eliminó la foto: " + cliente.getFoto() + " con éxito");
@@ -137,8 +137,8 @@ public class ClienteController {
     }
 
     @Autowired
-    public void setiClienteDao(IClienteService iClienteDao) {
-        this.iClienteDao = iClienteDao;
+    public void setiClienteService(IClienteService iClienteService) {
+        this.iClienteService = iClienteService;
     }
 
     @Autowired
