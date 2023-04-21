@@ -7,7 +7,9 @@
     <div class="card bg-light">
         <div class="card-header" th:text="${titulo}"></div>
         <div class="card-body">
-            <h4 class="card-title"></h4>
+            <h4 class="card-title">
+                <a class="btn btn-light btn-xs" th:href="@{'/ver/' + ${factura.cliente.id}}" th:text="'&laquo; Volver'"></a>
+            </h4>
             <form th:action="@{/factura/form}" th:object="${factura}" method="post">
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label" for="cliente" th:text="'Cliente'"></label>
@@ -27,6 +29,26 @@
                         <textarea class="form-control" name="observacion" id="observacion" th:field="*{observacion}"></textarea>
                     </div>
                 </div>
+                <!-- Campo de búsqueda -->
+                <div class="form-group row">
+                    <label class="col-sm-2 col-form-label" for="buscar_producto" th:text="'Buscar producto'"></label>
+                    <div class="col-sm-6">
+                        <input type="text" name="buscar_producto" class="form-control" id="buscar_producto">
+                    </div>
+                </div>
+                <table th:replace="~{factura/plantilla-items :: itemsFactura}"></table>
+                <table id="cargarItemProductos" class="table table-sm table-striped table-hover">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
                 <div class="form-group row">
                     <div class="col-sm-6">
                         <input type="submit" th:value="${titulo}" class="btn btn-secondary">
@@ -37,5 +59,6 @@
     </div>
 </div>
 <footer th:replace="~{layouts/layout :: footer}"></footer>
+<script th:replace="~{factura/js/autocomplete-productos :: javascript}"></script>
 </body>
 </html>

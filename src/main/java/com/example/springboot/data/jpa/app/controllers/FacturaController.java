@@ -1,15 +1,14 @@
 package com.example.springboot.data.jpa.app.controllers;
 
-import com.example.springboot.data.jpa.app.models.entity.Cliente;
-import com.example.springboot.data.jpa.app.models.entity.Factura;
-import com.example.springboot.data.jpa.app.models.services.IClienteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.springboot.data.jpa.app.models.entity.*;
+import com.example.springboot.data.jpa.app.models.services.*;
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/factura")
@@ -28,6 +27,11 @@ public class FacturaController {
         model.put("factura", factura);
         model.put("titulo", "Crear factura");
         return "factura/form";
+    }
+
+    @GetMapping(value = "/cargar-productos/{term}", produces = {"application/json"})
+    public @ResponseBody List<Producto> cargarProductos(@PathVariable String term) {
+        return iClienteService.findProductoByNombre(term);
     }
 
     @Autowired

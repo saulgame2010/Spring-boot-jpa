@@ -1,7 +1,9 @@
 package com.example.springboot.data.jpa.app.models.services;
 
 import com.example.springboot.data.jpa.app.models.dao.IClientesDao;
+import com.example.springboot.data.jpa.app.models.dao.IProductoDao;
 import com.example.springboot.data.jpa.app.models.entity.Cliente;
+import com.example.springboot.data.jpa.app.models.entity.Producto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import java.util.List;
 @Service
 public class ClienteServiceImpl implements IClienteService {
     private IClientesDao clientesDao;
+    private IProductoDao productoDao;
 
     @Transactional(readOnly = true)
     @Override
@@ -44,8 +47,19 @@ public class ClienteServiceImpl implements IClienteService {
         return clientesDao.findAll(pageable);
     }
 
+    @Override
+    //@Transactional(readOnly = true)
+    public List<Producto> findProductoByNombre(String nombre) {
+        return productoDao.findByNombreLikeIgnoreCase("%" + nombre + "%");
+    }
+
     @Autowired
     public void setClientesDao(IClientesDao clientesDao) {
         this.clientesDao = clientesDao;
+    }
+
+    @Autowired
+    public void setProductoDao(IProductoDao productoDao) {
+        this.productoDao = productoDao;
     }
 }

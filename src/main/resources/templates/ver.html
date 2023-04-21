@@ -7,6 +7,9 @@
     <div class="card bg-light">
         <div class="card-header" th:text="${titulo}"></div>
         <div class="card-body">
+            <h4>
+                <a class="btn btn-success" th:href="@{'/factura/form/' + ${cliente.id}}"> Crear factura</a>
+            </h4>
             <img th:if="${#strings.length(cliente.foto) > 0}" th:src="@{'/uploads/' + ${cliente.foto}}"
                  th:alt="${cliente.foto}" class="img-thumbnail rounded float-left" style="max-width: 25%;">
             <ul class="list-group">
