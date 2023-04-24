@@ -1,8 +1,10 @@
 package com.example.springboot.data.jpa.app.models.services;
 
 import com.example.springboot.data.jpa.app.models.dao.IClientesDao;
+import com.example.springboot.data.jpa.app.models.dao.IFacturaDao;
 import com.example.springboot.data.jpa.app.models.dao.IProductoDao;
 import com.example.springboot.data.jpa.app.models.entity.Cliente;
+import com.example.springboot.data.jpa.app.models.entity.Factura;
 import com.example.springboot.data.jpa.app.models.entity.Producto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import java.util.List;
 public class ClienteServiceImpl implements IClienteService {
     private IClientesDao clientesDao;
     private IProductoDao productoDao;
+    private IFacturaDao facturaDao;
 
     @Transactional(readOnly = true)
     @Override
@@ -48,9 +51,33 @@ public class ClienteServiceImpl implements IClienteService {
     }
 
     @Override
-    //@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<Producto> findProductoByNombre(String nombre) {
         return productoDao.findByNombreLikeIgnoreCase("%" + nombre + "%");
+    }
+
+    @Override
+    @Transactional
+    public void saveFactura(Factura factura) {
+        facturaDao.save(factura);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Producto findProductoById(Long id) {
+        return productoDao.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Factura findFacturaById(Long id) {
+        return facturaDao.findById(id).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void deleteFactura(Long id) {
+        facturaDao.deleteById(id);
     }
 
     @Autowired
@@ -61,5 +88,10 @@ public class ClienteServiceImpl implements IClienteService {
     @Autowired
     public void setProductoDao(IProductoDao productoDao) {
         this.productoDao = productoDao;
+    }
+
+    @Autowired
+    public void setFacturaDao(IFacturaDao facturaDao) {
+        this.facturaDao = facturaDao;
     }
 }

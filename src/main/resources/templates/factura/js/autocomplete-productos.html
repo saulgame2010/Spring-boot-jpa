@@ -24,19 +24,58 @@
             },
             select: function (event, ui) {
                 //$('#buscar_producto').val(ui.item.label);
+                let campoBuscar = $('#buscar_producto')
+                if (itemsHelper.hasProduct(ui.item.value)) {
+                    itemsHelper.incrementaCantidad(ui.item.value, ui.item.precio)
+                    campoBuscar.val("")
+                    return false
+                }
                 let linea = $('#plantillaItemsFactura').html();
                 linea = linea.replace(/{ID}/g, ui.item.value);
                 linea = linea.replace(/{NOMBRE}/g, ui.item.label);
                 linea = linea.replace(/{PRECIO}/g, ui.item.precio);
                 $('#cargarItemProductos tbody').append(linea);
                 itemsHelper.calcularImporte(ui.item.value, ui.item.precio, 1)
+                campoBuscar.val("")
                 return false;
             }
         });
+        $('form').submit(function() {
+            $('#plantillaItemsFactura').remove();
+            return
+        })
     });
-    let itemsHelper ={
-        calcularImporte: (id, precio, cantidad) => {
+    let itemsHelper = {
+        calcularImporte: function(id, precio, cantidad) {
             $('#total_importe_' + id).html(parseFloat(precio) * parseInt(cantidad))
+            this.calcularGranTotal()
+        },
+        hasProduct: function(id) {
+            let resultado = false;
+            $('input[name="item_id[]"]').each(function() {
+                if (parseInt(id) === parseInt($(this).val())) {
+                    resultado = true
+                }
+            })
+            return resultado
+        },
+        incrementaCantidad: function(id, precio) {
+            const cantidadHtml = $('#cantidad_' + id)
+            let cantidad = cantidadHtml.val() ? parseInt(cantidadHtml.val()) : 0
+            cantidadHtml.val(++cantidad)
+            this.calcularImporte(id, precio, cantidad)
+        },
+        eliminarLineaFactura: function(id) {
+            const fila = $('#row_' + id);
+            fila.remove();
+            this.calcularGranTotal()
+        },
+        calcularGranTotal: function() {
+            let total = 0
+            $('span[id^="total_importe_"]').each(function () {
+                total += parseInt($(this).html())
+            })
+            $('#gran_total').html(total)
         }
     }
 </script>

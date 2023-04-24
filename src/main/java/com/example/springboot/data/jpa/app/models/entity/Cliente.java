@@ -45,7 +45,7 @@ public class Cliente implements Serializable {
     private String foto;
 
     public Cliente() {
-        facturas = new ArrayList<Factura>();
+        facturas = new ArrayList<>();
     }
 
     public Long getId() {
@@ -106,6 +106,11 @@ public class Cliente implements Serializable {
 
     public void addFactura(Factura factura) {
         facturas.add(factura);
+    }
+
+    @Override
+    public String toString() {
+        return this.nombre + " " + this.apellido;
     }
 
     @Serial
