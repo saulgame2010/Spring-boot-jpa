@@ -20,4 +20,6 @@ public interface IClienteService {
     Producto findProductoById(Long id);
     Factura findFacturaById(Long id);
     void deleteFactura(Long id);
+    Factura fetchByIdWithClienteWithItemFacturaWithProducto(Long id);
+    Cliente fetchByIdWithFacturas(Long id);
 }

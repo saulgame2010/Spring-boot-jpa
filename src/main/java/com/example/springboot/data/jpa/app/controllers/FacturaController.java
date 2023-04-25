@@ -70,7 +70,7 @@ public class FacturaController {
 
     @GetMapping("/ver/{id}")
     public String ver(@PathVariable Long id, Model model, RedirectAttributes flash) {
-        Factura factura = iClienteService.findFacturaById(id);
+        Factura factura = iClienteService.fetchByIdWithClienteWithItemFacturaWithProducto(id); //iClienteService.findFacturaById(id);
         if(factura == null) {
             flash.addFlashAttribute("error", "No existe la factura en el sistema");
             return "redirect:/listar";

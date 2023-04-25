@@ -47,7 +47,7 @@ public class ClienteController {
 
     @GetMapping("/ver/{id}")
     public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
-        Cliente cliente = iClienteService.findOne(id);
+        Cliente cliente = iClienteService.fetchByIdWithFacturas(id); //iClienteService.findOne(id);
         if(cliente == null) {
             flash.addFlashAttribute("error", "El cliente no existe en el sistema");
             return "redirect:/listar";
@@ -97,7 +97,7 @@ public class ClienteController {
             cliente.setFoto(uniqueFilename);
         }
         String mensajeFlash = (cliente.getId() != null) ? "Cliente editado con éxito" : "Cliente creado con éxito";
-        iClienteService.save(cliente);
+        iClienteService.    save(cliente);
         status.setComplete();
         flash.addFlashAttribute("success", mensajeFlash);
         return "redirect:/listar";
