@@ -4,6 +4,7 @@ import com.example.springboot.data.jpa.app.controllers.util.paginator.PageRender
 import com.example.springboot.data.jpa.app.models.entity.Cliente;
 import com.example.springboot.data.jpa.app.models.services.IClienteService;
 import com.example.springboot.data.jpa.app.models.services.IUploadFileService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -67,7 +69,7 @@ public class ClienteController {
 
     @GetMapping({"/listar", "/"})
     public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
-                         Authentication authentication) {
+                         Authentication authentication, HttpServletRequest httpServletRequest) {
         if(authentication != null) {
             logger.info("El usuario '" + authentication.getName() + "' ha iniciado sesión con éxito desde el controlador");
             if(hasRole("ROLE_ADMIN")) {
@@ -75,6 +77,12 @@ public class ClienteController {
             } else {
                 logger.info("Hola ".concat(authentication.getName()).concat(" no eres el Señor"));
             }
+        }
+        SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(httpServletRequest, "ROLE_");
+        if(securityContext.isUserInRole("ADMIN")) {
+            logger.info("Tienes acceso perro admin");
+        } else {
+            logger.info("No tienes acceso de admin");
         }
         Pageable pageableRequest = PageRequest.of(page, 4);
         Page<Cliente> clientes = iClienteService.findAll(pageableRequest);
