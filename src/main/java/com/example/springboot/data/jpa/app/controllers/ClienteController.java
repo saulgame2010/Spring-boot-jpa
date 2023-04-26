@@ -5,6 +5,8 @@ import com.example.springboot.data.jpa.app.models.entity.Cliente;
 import com.example.springboot.data.jpa.app.models.services.IClienteService;
 import com.example.springboot.data.jpa.app.models.services.IUploadFileService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +28,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collection;
 import java.util.Map;
 
 @Controller
@@ -29,6 +36,7 @@ import java.util.Map;
 public class ClienteController {
     private IClienteService iClienteService;
     private IUploadFileService iUploadFileService;
+    protected  final Logger logger = LoggerFactory.getLogger(getClass());
 
     // La expresión regular ':.+' hace que Spring no trunque la extensión del archivo, ya que por defecto la manda alv
     @GetMapping("/uploads/{filename:.+}")
@@ -58,7 +66,16 @@ public class ClienteController {
     }
 
     @GetMapping({"/listar", "/"})
-    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
+    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
+                         Authentication authentication) {
+        if(authentication != null) {
+            logger.info("El usuario '" + authentication.getName() + "' ha iniciado sesión con éxito desde el controlador");
+            if(hasRole("ROLE_ADMIN")) {
+                logger.info("Hola ".concat(authentication.getName()).concat(" eres el Lord"));
+            } else {
+                logger.info("Hola ".concat(authentication.getName()).concat(" no eres el Señor"));
+            }
+        }
         Pageable pageableRequest = PageRequest.of(page, 4);
         Page<Cliente> clientes = iClienteService.findAll(pageableRequest);
         PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
@@ -134,6 +151,24 @@ public class ClienteController {
             return "redirect:/listar";
         }
         return "redirect:/listar";
+    }
+
+    private boolean hasRole(String rol) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        if(context == null) {
+            return false;
+        }
+        Authentication authentication = context.getAuthentication();
+        if(authentication == null) {
+            return false;
+        }
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        for(GrantedAuthority authority : authorities) {
+            if(rol.equals(authority.getAuthority())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Autowired
