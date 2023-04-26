@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -41,6 +42,7 @@ public class ClienteController {
     protected  final Logger logger = LoggerFactory.getLogger(getClass());
 
     // La expresión regular ':.+' hace que Spring no trunque la extensión del archivo, ya que por defecto la manda alv
+    @Secured("ROLE_USER")
     @GetMapping("/uploads/{filename:.+}")
     // El Resource indica que vamos a responder con un recurso, en este caso, la imagen
     public ResponseEntity<Resource> verFoto(@PathVariable String filename) {
@@ -55,6 +57,7 @@ public class ClienteController {
                 .body(recurso);
     }
 
+    @Secured("ROLE_USER")
     @GetMapping("/ver/{id}")
     public String ver(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes flash) {
         Cliente cliente = iClienteService.fetchByIdWithFacturas(id); //iClienteService.findOne(id);
@@ -93,6 +96,7 @@ public class ClienteController {
         return "listar";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/form")
     public String formCrear(Model model) {
         Cliente cliente = new Cliente();
@@ -101,6 +105,7 @@ public class ClienteController {
         return "form";
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/form")
     public String guardar(@Valid Cliente cliente, BindingResult result, Model model, @RequestParam(name = "file")MultipartFile foto,
                           RedirectAttributes flash, SessionStatus status) {
@@ -128,6 +133,7 @@ public class ClienteController {
         return "redirect:/listar";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/form/{id}")
     public String edit(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
         Cliente cliente = null;
@@ -146,6 +152,7 @@ public class ClienteController {
         return "form";
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable(value = "id") Long id, Model model, RedirectAttributes flash) {
         if(id > 0) {

@@ -4,6 +4,7 @@ import com.example.springboot.data.jpa.app.auth.handler.LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +13,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity(securedEnabled = true)
 public class SpringSecuritryConfig {
     private LoginSuccessHandler loginSuccessHandler;
     @Bean
@@ -43,11 +45,11 @@ public class SpringSecuritryConfig {
         http.authorizeHttpRequests((authz) -> {
             try {
                 authz.requestMatchers("/", "/css/**", "/js/**", "/image/**", "/listar").permitAll()
-                        .requestMatchers("/uploads/**").hasAnyRole("USER")
+                        /*.requestMatchers("/uploads/**").hasAnyRole("USER")
                         .requestMatchers("/ver/**").hasRole("USER")
                         .requestMatchers("/factura/**").hasRole("ADMIN")
                         .requestMatchers("/form/**").hasRole("ADMIN")
-                        .requestMatchers("/eliminar/**").hasRole("ADMIN")
+                        .requestMatchers("/eliminar/**").hasRole("ADMIN")*/
                         .anyRequest().authenticated()
                         .and()
                         .formLogin()

@@ -57,7 +57,7 @@
 </div>
 <footer th:fragment="footer" class="container">
     <hr>
-    <img width="30px;" th:src="@{image/spring.png}" alt="Spring logo">
+    <img width="30px;" th:src="@{/image/spring.png}" alt="Spring logo">
     <p sec:authorize="isAuthenticated()">
         Usuario logeado <span sec:authentication="name"></span> | Roles: <span
             sec:authentication="principal.authorities"></span>

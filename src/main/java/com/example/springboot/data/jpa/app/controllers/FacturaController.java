@@ -5,6 +5,7 @@ import com.example.springboot.data.jpa.app.models.services.*;
 import jakarta.validation.Valid;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@Secured("ROLE_ADMIN")
 @RequestMapping("/factura")
 @SessionAttributes("factura")
 public class FacturaController {
