@@ -1,5 +1,7 @@
 package com.example.springboot.data.jpa.app;
 
+import com.example.springboot.data.jpa.app.auth.handler.LoginSuccessHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SpringSecuritryConfig {
+    private LoginSuccessHandler loginSuccessHandler;
     @Bean
     public static BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -21,8 +24,8 @@ public class SpringSecuritryConfig {
 
         InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
         manager.createUser(User
-                .withUsername("jhon")
-                .password(passwordEncoder().encode("12345"))
+                .withUsername("saul")
+                .password(passwordEncoder().encode("123456"))
                 .roles("USER")
                 .build());
 
@@ -39,7 +42,7 @@ public class SpringSecuritryConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((authz) -> {
             try {
-                authz.requestMatchers("/", "/css/**", "/js/**", "/images/**", "/listar").permitAll()
+                authz.requestMatchers("/", "/css/**", "/js/**", "/image/**", "/listar").permitAll()
                         .requestMatchers("/uploads/**").hasAnyRole("USER")
                         .requestMatchers("/ver/**").hasRole("USER")
                         .requestMatchers("/factura/**").hasRole("ADMIN")
@@ -47,10 +50,14 @@ public class SpringSecuritryConfig {
                         .requestMatchers("/eliminar/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                         .and()
-                        .formLogin().loginPage("/login")
+                        .formLogin()
+                        .successHandler(loginSuccessHandler)
+                        .loginPage("/login")
                         .permitAll()
                         .and()
-                        .logout().permitAll();
+                        .logout().permitAll()
+                        .and()
+                        .exceptionHandling().accessDeniedPage("/error_403");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -59,5 +66,10 @@ public class SpringSecuritryConfig {
 
         return http.build();
 
+    }
+
+    @Autowired
+    public void setLoginSuccessHandler(LoginSuccessHandler loginSuccessHandler) {
+        this.loginSuccessHandler = loginSuccessHandler;
     }
 }
