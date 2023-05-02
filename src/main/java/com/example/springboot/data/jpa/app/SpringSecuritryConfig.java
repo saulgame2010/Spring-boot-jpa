@@ -1,6 +1,7 @@
 package com.example.springboot.data.jpa.app;
 
 import com.example.springboot.data.jpa.app.auth.handler.LoginSuccessHandler;
+import com.example.springboot.data.jpa.app.models.services.JpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,82 +20,37 @@ import javax.sql.DataSource;
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SpringSecuritryConfig {
-    private LoginSuccessHandler loginSuccessHandler;
+    @Autowired
+    private LoginSuccessHandler sucessHandler;
+
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-    private DataSource dataSource;
 
-    /*@Bean
-    public UserDetailsService userDetailsService() throws Exception {
+    @Autowired
+    private JpaUserDetailsService userDetailService;
 
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User
-                .withUsername("saul")
-                .password(passwordEncoder.encode("123456"))
-                .roles("USER")
-                .build());
-
-        manager.createUser(User
-                .withUsername("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN", "USER")
-                .build());
-
-        return manager;
-    }*/
+    @Autowired
+    public void userDetailsService(AuthenticationManagerBuilder build) throws Exception {
+        build.userDetailsService(userDetailService)
+                .passwordEncoder(passwordEncoder);
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((authz) -> {
-            try {
-                authz.requestMatchers("/", "/css/**", "/js/**", "/image/**", "/listar").permitAll()
-                        /*.requestMatchers("/uploads/**").hasAnyRole("USER")
-                        .requestMatchers("/ver/**").hasRole("USER")
-                        .requestMatchers("/factura/**").hasRole("ADMIN")
-                        .requestMatchers("/form/**").hasRole("ADMIN")
-                        .requestMatchers("/eliminar/**").hasRole("ADMIN")*/
-                        .anyRequest().authenticated()
-                        .and()
-                        .formLogin()
-                        .successHandler(loginSuccessHandler)
-                        .loginPage("/login")
-                        .permitAll()
-                        .and()
-                        .logout().permitAll()
-                        .and()
-                        .exceptionHandling().accessDeniedPage("/error_403");
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-
-        return http.build();
-
-    }
-
-    @Bean
-    AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .jdbcAuthentication()
-                .dataSource(dataSource)
-                .passwordEncoder(passwordEncoder)
-                .usersByUsernameQuery("select username, password, enabled from users where username=?")
-                .authoritiesByUsernameQuery("select u.username, a.authority from authorities a inner join users u on (a.user_id=u.id) where u.username=?")
+        return http
+                .authorizeHttpRequests()
+                .requestMatchers("/", "/css/**", "/js/**", "/image/**", "/listar")
+                .permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .successHandler(sucessHandler)
+                .loginPage("/login")
+                .permitAll()
+                .and()
+                .logout().permitAll()
+                .and()
+                .exceptionHandling().accessDeniedPage("/error_404")
                 .and().build();
-    }
-
-    @Autowired
-    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    @Autowired
-    public void setLoginSuccessHandler(LoginSuccessHandler loginSuccessHandler) {
-        this.loginSuccessHandler = loginSuccessHandler;
-    }
-
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
     }
 }
