@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -40,6 +42,7 @@ public class ClienteController {
     private IClienteService iClienteService;
     private IUploadFileService iUploadFileService;
     protected  final Logger logger = LoggerFactory.getLogger(getClass());
+    private MessageSource messageSource;
 
     // La expresión regular ':.+' hace que Spring no trunque la extensión del archivo, ya que por defecto la manda alv
     @Secured("ROLE_USER")
@@ -72,7 +75,8 @@ public class ClienteController {
 
     @GetMapping({"/listar", "/"})
     public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
-                         Authentication authentication, HttpServletRequest httpServletRequest) {
+                         Authentication authentication, HttpServletRequest httpServletRequest,
+                         Locale locale) {
         if(authentication != null) {
             logger.info("El usuario '" + authentication.getName() + "' ha iniciado sesión con éxito desde el controlador");
             if(hasRole("ROLE_ADMIN")) {
@@ -90,7 +94,7 @@ public class ClienteController {
         Pageable pageableRequest = PageRequest.of(page, 4);
         Page<Cliente> clientes = iClienteService.findAll(pageableRequest);
         PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
-        model.addAttribute("titulo", "Listado de clientes");
+        model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
         model.addAttribute("clientes", clientes);
         model.addAttribute("page", pageRender);
         return "listar";
@@ -194,5 +198,10 @@ public class ClienteController {
     @Autowired
     public void setiUploadFileService(IUploadFileService iUploadFileService) {
         this.iUploadFileService = iUploadFileService;
+    }
+
+    @Autowired
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 }
