@@ -1,5 +1,7 @@
 package com.example.springboot.data.jpa.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,6 +34,7 @@ public class Cliente implements Serializable {
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createAt;
 
     /*
@@ -40,6 +43,7 @@ public class Cliente implements Serializable {
     * - El cascade es como es ON DELETE/UPDATE Cascade en la BD con CascadeType.ALL
     * */
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Factura> facturas;
 
     private String foto;
