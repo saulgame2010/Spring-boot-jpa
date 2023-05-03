@@ -3,6 +3,7 @@ package com.example.springboot.data.jpa.app.models.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
+import jakarta.xml.bind.annotation.XmlTransient;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class Factura implements Serializable {
         this.createAt = createAt;
     }
 
+    @XmlTransient
     public Cliente getCliente() {
         return cliente;
     }
