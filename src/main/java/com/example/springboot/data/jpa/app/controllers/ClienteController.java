@@ -33,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -98,6 +99,11 @@ public class ClienteController {
         model.addAttribute("clientes", clientes);
         model.addAttribute("page", pageRender);
         return "listar";
+    }
+
+    @GetMapping("/listar-rest")
+    public @ResponseBody List<Cliente> listarRest() {
+        return iClienteService.findAll();
     }
 
     @Secured("ROLE_ADMIN")
